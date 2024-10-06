@@ -18,6 +18,20 @@ public class AddDataUsingDao {
 		}else {
 			System.out.println("Task completed");
 		}
+		System.out.println("Do you want to delete data");
+		String delete=sc.nextLine();
+		if(delete.equals("yes")) {
+			System.out.println("enter roll number to delete data");
+			int roll=sc.nextInt();
+			add.deleteData(roll);
+		}else if(delete.equals("no")){
+			System.out.println("Okay! we will keep it unchanged");
+			System.out.println();
+		}else {
+			System.out.println("Invalid Input");
+		}
+		System.out.println("Current Data");
+		add.showData();
 	}
 
 }
@@ -62,6 +76,22 @@ class AddStudent{
 		while(rst.next()) {
 			System.out.println(rst.getInt(1)+" "+rst.getString(2));
 		}
+		st.close();
+		con.close();
+	}
+	public void deleteData(int rollNum) throws Exception{
+		Class.forName("com.mysql.cj.jdbc.Driver");
+		String url= "jdbc:mysql://localhost:3306/StData";
+		String user="root";
+		String pass="anshu";
+		String query = "Delete from StData where rollNum=?";
+		
+		Connection con = DriverManager.getConnection(url,user,pass);
+		PreparedStatement st=con.prepareStatement(query);
+		
+		st.setInt(1,rollNum);
+		int rst=st.executeUpdate();
+		
 		st.close();
 		con.close();
 	}
