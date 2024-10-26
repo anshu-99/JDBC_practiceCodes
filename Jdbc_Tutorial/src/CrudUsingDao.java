@@ -3,7 +3,7 @@ import java.util.Scanner;
 
 public class CrudUsingDao {
 
-    public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
         Crud crd = new Crud();
 
@@ -22,9 +22,35 @@ public class CrudUsingDao {
 
         System.out.println("Enter EID:");
         int EID = sc.nextInt();
-        sc.nextLine(); // Clear the buffer
+        sc.nextLine(); // Clear the buffer after nextInt()
 
         crd.addData(name, EID);
+
+        System.out.println("Enter EID number to see data:");
+        int EmpID = sc.nextInt();
+        sc.nextLine(); // Clear the buffer after nextInt()
+
+        crd.readData(EmpID);
+
+        System.out.println("Do you wanna update data? (yes/no)");
+        String dcsn = sc.nextLine(); // Read user input correctly
+
+        if (dcsn.equalsIgnoreCase("yes")) {
+            System.out.println("Enter the employee number of the employee whose name you want to update:");
+            int eid = sc.nextInt();
+            sc.nextLine(); // Clear the buffer after nextInt()
+
+            System.out.println("Enter the new name of the employee:");
+            String empName = sc.nextLine(); // Read employee name
+
+            crd.updateData(eid, empName);
+        } else if (dcsn.equalsIgnoreCase("no")) {
+            System.out.println("Operation cancelled.");
+        } else {
+            System.out.println("Invalid choice.");
+        }
+
+        sc.close(); // Close the scanner to free resources
     }
 }
 
@@ -72,6 +98,31 @@ class Crud {
         // Close resources
         pst.close();
         con.close();
+    }
+    public void readData(int EID) throws Exception {
+    	Connection con = DriverManager.getConnection(URL,USER,PASSWORD);
+    	String query="SELECT * from empData where EID=?;";
+    	PreparedStatement st=con.prepareStatement(query);
+    	st.setInt(1, EID);
+    	ResultSet rst=st.executeQuery();
+    	while(rst.next()) {
+    		System.out.println(rst.getString(1)+":"+rst.getInt(2));
+    	}
+    	st.close();
+    	con.close();
+    }
+    public void updateData(int eid,String name) throws Exception {
+    	Connection con = DriverManager.getConnection(URL,USER,PASSWORD);
+    	String query="Update empData set name=? where EID=? ;";
+    	PreparedStatement pst= con.prepareStatement(query);
+    	pst.setString(1, name);
+    	pst.setInt(2, eid);
+    	
+    	int count=pst.executeUpdate();
+    	
+    	System.out.println(count+" rows affected");
+    	pst.close();
+    	con.close();
     }
 }
 
